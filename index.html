@@ -354,6 +354,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       <button class="btn" data-act="add" data-kind="exam">＋ 考试</button>
       <button class="btn" data-act="add" data-kind="res">＋ 资料</button>
       <button class="btn" data-act="publish">备份</button>
+      <button class="btn ghost" data-act="stats">统计</button>
       <button class="btn ghost" data-act="resync">刷新云端</button>
       <button class="btn ghost" data-act="resetfile">从文件重置</button>
       <button class="btn primary hidden" data-act="seed" id="seedBtn">初始化云端</button>
@@ -678,28 +679,112 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   }
 
   function uploadFile(file){
-    if(!loggedIn()) return Promise.reject(new Error("请先登录"));
-    var safe = file.name.replace(/[^\w.\-\u4e00-\u9fa5]/g, "_");
-    var path = Date.now().toString(36) + "-" + safe;
-    return fetch(SUPA.url + "/storage/v1/object/" + SUPA.bucket + "/" + encodeURIComponent(path), {
-      method: "POST",
-      headers: {
-        "apikey": SUPA.key,
-        "Authorization": "Bearer " + CLOUD.token,
-        "Content-Type": file.type || "application/octet-stream",
-        "x-upsert": "false"
-      },
-      body: file
-    }).then(function(r){
-      if(!r.ok) return r.text().then(function(t){
-        var m = ""; try{ m = JSON.parse(t).message; }catch(e){ m = t; }
-        throw new Error(m || ("上传失败 HTTP " + r.status));
+    // Supabase 存储的 key 只允许 ASCII，中文名会被拒绝：文件用随机 ASCII 名，原始文件名只用于显示
+    var m = String(file.name || "").match(/\.([A-Za-z0-9]{1,8})$/);
+    var ext = m ? "." + m[1].toLowerCase() : "";
+    var base = String(file.name || "").replace(/\.[^.]+$/, "")
+      .replace(/[^A-Za-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 24);
+    var path = (base ? base + "-" : "f-") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) + ext;
+    var url = SUPA.url + "/storage/v1/object/" + SUPA.bucket + "/" + encodeURIComponent(path);
+
+    function send(){
+      return fetch(url, {
+        method: "POST",
+        headers: {
+          "apikey": SUPA.key,
+          "Authorization": "Bearer " + CLOUD.token,
+          "Content-Type": file.type || "application/octet-stream",
+          "x-upsert": "false"
+        },
+        body: file
+      }).then(function(r){
+        if(r.ok) return SUPA.url + "/storage/v1/object/public/" + SUPA.bucket + "/" + encodeURIComponent(path);
+        return r.text().then(function(t){
+          var msg = ""; try{ msg = JSON.parse(t).message || JSON.parse(t).error; }catch(e){ msg = t; }
+          var err = new Error(msg || ("上传失败 HTTP " + r.status));
+          err.status = r.status;
+          throw err;
+        });
       });
-      return SUPA.url + "/storage/v1/object/public/" + SUPA.bucket + "/" + encodeURIComponent(path);
+    }
+
+    var ready = loggedIn()
+      ? Promise.resolve()
+      : (CLOUD.refresh ? cloudRefresh() : Promise.reject(new Error("登录已过期，请重新登录")));
+
+    return ready.then(send).catch(function(e){
+      if(e.status === 401 && CLOUD.refresh){
+        return cloudRefresh().then(send).catch(function(){ throw e; });
+      }
+      throw e;
     });
   }
   function data(){ return CLOUD.data || CLASS; }
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+  /* ---------- 访问统计 ---------- */
+  function ymd(d){ return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function recordVisit(){
+    if(!ONLINE) return;
+    var today = new Date(), key = "shumei4.v." + ymd(today);
+    try{ if(localStorage.getItem(key)) return; }catch(e){}
+    fetch(SUPA.url + "/rest/v1/visits", {
+      method: "POST",
+      headers: { "apikey": SUPA.key, "Content-Type": "application/json", "Prefer": "return=minimal" },
+      body: JSON.stringify({ day: ymd(today) })
+    }).then(function(){ try{ localStorage.setItem(key, "1"); }catch(e){} })
+      .catch(function(){});
+  }
+  function visitCount(filter){
+    var headers = { "apikey": SUPA.key, "Prefer": "count=exact", "Range": "0-0" };
+    if(CLOUD.token) headers["Authorization"] = "Bearer " + CLOUD.token;
+    return fetch(SUPA.url + "/rest/v1/visits?select=id" + filter, { method: "HEAD", headers: headers })
+      .then(function(r){
+        if(!r.ok) return -1;
+        var n = parseInt(String(r.headers.get("content-range") || "").split("/")[1], 10);
+        return isNaN(n) ? -1 : n;
+      }).catch(function(){ return -1; });
+  }
+  function openStats(){
+    openModal(
+      '<header><h2 id="sheetTitle">访问统计</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>' +
+      '<p class="sub">同一浏览器同一天只记一次，所以数字≈“打开过的人数（设备）”。</p>' +
+      '<div id="statBox" style="padding:8px 0 4px;color:var(--muted);font-size:13px">读取中…</div>' +
+      '<div class="foot"><button class="btn ghost" data-act="close">关闭</button></div>'
+    );
+    var now = new Date(), mon = new Date(now.getTime());
+    mon.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    Promise.all([
+      visitCount("&day=eq." + ymd(now)),
+      visitCount("&day=gte." + ymd(mon)),
+      visitCount("")
+    ]).then(function(r){
+      var box = $("#statBox");
+      if(!box) return;
+      if(r[2] < 0){
+        box.innerHTML = "读不到统计数据。<br>最常见的原因是 <code>visits</code> 表还没建——在 Supabase 的 SQL Editor 里跑一下我给的建表语句，再回来看。";
+        return;
+      }
+      box.innerHTML =
+        '<div style="display:flex;gap:22px;flex-wrap:wrap">' +
+          '<div><div style="font-size:12px;color:var(--muted)">今天</div><div style="font-size:30px;font-weight:700;color:var(--ink);line-height:1.2">' + r[0] + "</div></div>" +
+          '<div><div style="font-size:12px;color:var(--muted)">本周</div><div style="font-size:30px;font-weight:700;color:var(--ink);line-height:1.2">' + r[1] + "</div></div>" +
+          '<div><div style="font-size:12px;color:var(--muted)">累计</div><div style="font-size:30px;font-weight:700;color:var(--ink);line-height:1.2">' + r[2] + "</div></div>" +
+        "</div>";
+    });
+  }
+
+  /* ---------- 删除云端附件 ---------- */
+  function deleteStorageFile(url){
+    if(!ONLINE || !url) return Promise.resolve();
+    var prefix = SUPA.url + "/storage/v1/object/public/" + SUPA.bucket + "/";
+    if(String(url).indexOf(prefix) !== 0) return Promise.resolve();
+    var path = decodeURIComponent(String(url).slice(prefix.length));
+    return fetch(SUPA.url + "/storage/v1/object/" + SUPA.bucket + "/" + encodeURIComponent(path), {
+      method: "DELETE",
+      headers: { "apikey": SUPA.key, "Authorization": "Bearer " + CLOUD.token }
+    }).catch(function(){});
+  }
   function ensureEditable(){
     if(!CLOUD.data) CLOUD.data = clone(CLASS);
     return CLOUD.data;
@@ -1351,15 +1436,18 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       var typeSel = $('#editForm select[name="type"]');
       function setFile(f){
         if(!f) return;
-        dz.className = "dropzone"; dz.textContent = "上传中：" + f.name;
+        var sizeTxt = f.size > 1048576 ? "（" + (f.size / 1048576).toFixed(1) + " MB）" : "";
+        dz.className = "dropzone"; dz.textContent = "上传中：" + f.name + sizeTxt;
         uploadFile(f).then(function(u){
           if(urlInput) urlInput.value = u;
           if(typeSel){
             if(/\.pdf$/i.test(f.name)) typeSel.value = "PDF";
             else if(/\.(png|jpe?g|gif|webp)$/i.test(f.name)) typeSel.value = "图片";
           }
+          var titleInput = $('#editForm input[name="title"]');
+          if(titleInput && !titleInput.value.trim()) titleInput.value = f.name.replace(/\.[^.]+$/, "");
           dz.className = "dropzone done";
-          dz.textContent = "已上传：" + f.name;
+          dz.textContent = "已上传：" + f.name + " · 记得点下面的「保存」";
         }).catch(function(err){
           dz.className = "dropzone";
           dz.textContent = "上传失败：" + (err.message || "未知错误");
@@ -1517,7 +1605,12 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       var list = kindList(kind);
       if(!confirm("确定删除？删除后立刻同步给全班，无法撤销。")) return;
       var base = ensureEditable();
+      var victim = base[list].filter(function(o){ return o.id === id; })[0];
       base[list] = base[list].filter(function(o){ return o.id !== id; });
+      if(victim){
+        if(victim.url) deleteStorageFile(victim.url);
+        (victim.files || []).forEach(function(f){ deleteStorageFile(f.url); });
+      }
       if(!modal.hidden) closeModal();
       renderAll(); toast("已删除，正在保存…");
       cloudSave();
@@ -1555,6 +1648,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       return;
     }
     if(a === "exitadmin"){ exitAdmin(); return; }
+    if(a === "stats"){ openStats(); return; }
     if(a === "publish"){ exportPackage(); return; }
     if(a === "copypkg"){
       var box = $("#pkgBox"); box.select(); box.setSelectionRange(0, 999999);
@@ -1630,6 +1724,9 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
 
   /* 3. 后台从云端拉最新 */
   if(ONLINE) cloudLoad();
+
+  /* 3.5 记一次访问（同一浏览器当天只记一次） */
+  recordVisit();
 
   /* 4. 回到页面时自动刷新 */
   document.addEventListener("visibilitychange", function(){
