@@ -91,6 +91,13 @@ nav.tabs::-webkit-scrollbar{display:none}
 .filerow input{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12.5px;background:#fff;outline:none;min-width:0}
 .filerow .xbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:0 9px;cursor:pointer;color:var(--muted);font-size:12px}
 .filerow .xbtn:hover{color:var(--red);border-color:#e7d3ce}
+.droparea{min-height:6px}
+.droparea.over{outline:2px dashed var(--green-2);outline-offset:-4px;border-radius:8px}
+.dropzone{border:1px dashed #cfc8b8;border-radius:10px;padding:14px 12px;text-align:center;font-size:12.5px;color:var(--muted);
+  cursor:pointer;background:rgba(255,254,251,.6);line-height:1.6;transition:.16s}
+.dropzone:hover,.dropzone.over{border-color:var(--green-2);background:var(--soft);color:var(--green)}
+.dropzone span{display:block;font-size:11px;opacity:.8;margin-top:2px}
+.dropzone.done{border-color:#bcd8c9;color:var(--green);background:var(--soft)}
 
 /* ---------- toolbar ---------- */
 .toolbar{display:flex;align-items:center;gap:6px;margin-bottom:9px}
@@ -242,6 +249,12 @@ table.tt{width:100%;border-collapse:separate;border-spacing:0;min-width:600px;fo
 .slot.teal{background:#e6f4f3;color:#236b66}
 .slot.purple{background:#f1ecfa;color:#5b4390}
 .ttnote{font-size:11.5px;color:var(--muted);margin-top:9px;margin-bottom:50px;line-height:1.6}
+.ttadminhint{background:var(--soft);border:1px solid #bcd8c9;color:var(--green);border-radius:9px;padding:7px 11px;
+  font-size:12px;margin-bottom:9px}
+.slot.clickable{cursor:pointer;border:1px solid transparent}
+.slot.clickable:hover{border-color:var(--green-2);filter:brightness(.98)}
+.tt td.empty-cell{cursor:pointer}
+.tt td.empty-cell:hover{background:var(--soft);box-shadow:inset 0 0 0 1px #bcd8c9}
 .demostrip{background:var(--gold-bg);border:1px solid var(--gold-line);color:#6b4f1a;border-radius:9px;padding:7px 11px;
   font-size:12px;margin-bottom:10px;line-height:1.45}
 
@@ -265,6 +278,7 @@ table.tt{width:100%;border-collapse:separate;border-spacing:0;min-width:600px;fo
 .field textarea{resize:vertical;min-height:60px;line-height:1.55}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:#9dc4b0;box-shadow:0 0 0 3px rgba(47,125,97,.12)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .sheet .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-2)}
 .sheet .foot .left{margin-right:auto}
 textarea.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;line-height:1.5;min-height:110px}
@@ -332,7 +346,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   <div id="adminbar" class="adminbar hidden">
     <div class="abrow">
       <span class="tag">管理</span>
-      <span class="pubstate" id="pubState">与线上一致</span>
+      <span class="pubstate" id="pubState">已同步</span>
       <button class="btn ghost abb" data-act="exitadmin">退出</button>
     </div>
     <div class="abrow">
@@ -341,6 +355,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       <button class="btn" data-act="add" data-kind="res">＋ 资料</button>
       <button class="btn" data-act="publish">备份</button>
       <button class="btn ghost" data-act="resync">刷新云端</button>
+      <button class="btn ghost" data-act="resetfile">从文件重置</button>
       <button class="btn primary hidden" data-act="seed" id="seedBtn">初始化云端</button>
     </div>
     <div class="abmeta" id="abMeta"></div>
@@ -380,6 +395,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   <!-- 课表 -->
   <section id="view-table" class="hidden">
     <div class="demostrip" id="ttDemo">以下为示例课表 —— 把真实课表发给管理员后替换。</div>
+    <div class="ttadminhint hidden" id="ttHint">管理模式 · 点格子可以改，点空白格子可以新增</div>
     <div class="weekbar">
       <button class="nav" id="wkPrev" aria-label="上一周">‹</button>
       <span class="lbl" id="wkLabel">第 1 周</span>
@@ -453,17 +469,17 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       /* 复习文件（PDF）待上传；上传后由维护者放入 files/ 目录并在此登记 */
     ],
     timetable: [
-      /* 第 13 周（11/23—11/29）课表；周末与晚间为个人安排，未收录 */
+      /* 周课表；周末与晚间为个人安排，未收录 */
       { d:1, p:1, len:2, c:"Technical Language and Academic Study", r:"实验楼506" },
       { d:1, p:3, len:3, c:"高等数学（一）", r:"实验楼101" },
-      { d:1, p:9, len:3, c:"习近平新时代中国特色社会主义思想概论", r:"实验楼104" },
       { d:2, p:1, len:2, c:"信息通信概论A", r:"实验楼104" },
-      { d:2, p:3, len:3, c:"体育基础", r:"体育场" },
+      { d:2, p:3, len:2, c:"体育基础", r:"体育场" },
+      { d:2, p:9, len:3, c:"习近平新时代中国特色社会主义思想概论", r:"实验楼104" },
       { d:3, p:3, len:3, c:"线性代数", r:"实验楼507室" },
-      { d:4, p:1, len:2, c:"军事理论", r:"实验楼102" },
       { d:4, p:3, len:3, c:"Technical Language and Academic Study", r:"实验楼506" },
       { d:5, p:1, len:2, c:"高等数学（一）", r:"实验楼101" },
-      { d:5, p:3, len:3, c:"计算导论与程序设计", r:"实验楼101" }
+      { d:5, p:3, len:3, c:"计算导论与程序设计", r:"实验楼101" },
+      { d:5, p:7, len:2, c:"军事理论", r:"实验楼102" }
     ]
   };
 
@@ -732,7 +748,9 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       '<span class="s">已完成 <b>' + c.done + "</b></span>" +
       '<span class="s">待考 <b>' + futureExams().length + "</b></span>";
     $("#summary").innerHTML = html;
-    $("#ver").textContent = data().updated || data().version || "";
+    $("#ver").textContent = CLOUD.updatedAt
+      ? new Date(CLOUD.updatedAt).toLocaleString("zh-CN", { month:"numeric", day:"numeric", hour:"2-digit", minute:"2-digit" })
+      : (data().updated || data().version || "");
 
     var strip = $("#examStrip");
     if(nextExam){
@@ -1068,6 +1086,8 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     head += "</tr></thead>";
 
     var occupied = {}, rows = [];
+    var editable = admin && ONLINE;
+    $("#ttHint").classList.toggle("hidden", !editable);
     for(var p = 1; p <= maxP; p++){
       var per = PERIODS[p - 1];
       var row = "<tr><th class='p'>" + per.n + "<small>" + per.t + "</small><small>" + per.e + "</small></th>";
@@ -1078,16 +1098,72 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
         if(s){
           var len = Math.max(1, Math.min(s.len || 1, maxP - p + 1));
           for(var k = 1; k < len; k++) occupied[d + "-" + (p + k)] = 1;
+          var idx = tt.indexOf(s);
           row += "<td rowspan='" + len + "' class='" + cls + "'>" +
-            '<div class="slot ' + courseHue(s.c) + '"><b>' + esc(s.c) + "</b>" +
-            (s.r ? "<span>" + esc(s.r) + "</span>" : "") + "</div></td>";
+            '<div class="slot ' + courseHue(s.c) + (editable ? " clickable" : "") + '"' +
+            (editable ? ' data-act="slot" data-idx="' + idx + '"' : "") + ">" +
+            "<b>" + esc(s.c) + "</b>" + (s.r ? "<span>" + esc(s.r) + "</span>" : "") + "</div></td>";
         }else{
-          row += "<td class='" + cls + "'></td>";
+          row += "<td class='" + cls + (editable ? " empty-cell" : "") + "'" +
+            (editable ? ' data-act="newslot" data-d="' + d + '" data-p="' + p + '"' : "") + "></td>";
         }
       });
       rows.push(row + "</tr>");
     }
     $("#ttTable").innerHTML = head + "<tbody>" + rows.join("") + "</tbody>";
+  }
+
+  function slotEditor(idx, d0, p0){
+    var tt = (data().timetable || []);
+    var s = (idx >= 0 && tt[idx]) ? tt[idx] : null;
+    var d = s ? s.d : d0, p0v = s ? s.p : p0, len = s ? (s.len || 1) : 1;
+    var DAYS = ["", "周一", "周二", "周三", "周四", "周五", "周六", "周日"];
+    var dOpts = "";
+    for(var di = 1; di <= 7; di++) dOpts += '<option value="' + di + '"' + (di === d ? " selected" : "") + ">" + DAYS[di] + "</option>";
+    var opts = "";
+    for(var i = 1; i <= PERIODS.length; i++) opts += '<option value="' + i + '"' + (i === p0v ? " selected" : "") + ">第 " + i + " 节</option>";
+    var lenOpts = "";
+    for(var k = 1; k <= 6; k++) lenOpts += '<option value="' + k + '"' + (k === len ? " selected" : "") + ">" + k + " 节</option>";
+    openModal(
+      '<header><h2 id="sheetTitle">' + (s ? "编辑课程" : "新增课程") + '</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>' +
+      '<p class="sub">保存后立刻同步给全班</p>' +
+      '<form id="slotForm">' +
+        '<div class="field"><label>课程名称<i>*</i></label><input name="c" value="' + esc(s ? s.c : "") + '" placeholder="例如：高等数学（一）"></div>' +
+        '<div class="field"><label>教室 / 地点</label><input name="r" value="' + esc(s ? (s.r || "") : "") + '" placeholder="例如：实验楼101"></div>' +
+        '<div class="row3">' +
+          '<div class="field"><label>星期</label><select name="d">' + dOpts + "</select></div>" +
+          '<div class="field"><label>起始节</label><select name="p">' + opts + "</select></div>" +
+          '<div class="field"><label>连续节数</label><select name="len">' + lenOpts + "</select></div>" +
+        "</div>" +
+        '<div class="foot">' +
+          (s ? '<button type="button" class="btn danger left" data-act="delslot" data-idx="' + idx + '">删除</button>' : "") +
+          '<button type="button" class="btn ghost" data-act="close">取消</button>' +
+          '<button type="submit" class="btn primary">保存</button>' +
+        "</div></form>"
+    );
+    $("#slotForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var fd = new FormData(e.target);
+      var c = String(fd.get("c") || "").trim(), r = String(fd.get("r") || "").trim();
+      var nd = parseInt(fd.get("d"), 10), np = parseInt(fd.get("p"), 10), nl = parseInt(fd.get("len"), 10);
+      if(!c){ toast("请填写课程名称"); return; }
+      var base = ensureEditable();
+      if(!base.timetable) base.timetable = [];
+      var clash = null;
+      base.timetable.forEach(function(x, i2){
+        if(x.d !== nd) return;
+        if(s && i2 === idx) return;
+        var a1 = x.p, a2 = x.p + (x.len || 1) - 1, b1 = np, b2 = np + nl - 1;
+        if(!(a2 < b1 || b2 < a1)) clash = x.c;
+      });
+      if(clash){ toast("时间冲突：那一格已经有「" + clash + "」"); return; }
+      var obj = { d: nd, p: np, len: nl, c: c };
+      if(r) obj.r = r;
+      if(s) base.timetable[idx] = obj; else base.timetable.push(obj);
+      closeModal(); renderAll();
+      toast(s ? "已更新，正在保存…" : "已添加，正在保存…");
+      cloudSave();
+    });
   }
 
   /* ============================ 渲染总控 ============================ */
@@ -1216,22 +1292,27 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     }).join("");
     var attachHTML = kind === "task" ? (
       '<div class="field"><label>附件 / 链接（可选）</label>' +
-      '<div id="fileRows"></div>' +
+      '<div id="fileRows" class="droparea"></div>' +
       '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
         '<button type="button" class="btn" id="addFile" style="padding:4px 10px;font-size:12px">＋ 添加链接</button>' +
         (ONLINE ? '<label class="btn" style="padding:4px 10px;font-size:12px;cursor:pointer">⬆ 上传文件<input type="file" id="uploadFile" multiple hidden></label>' : "") +
       "</div>" +
       '<div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5">' +
-        (ONLINE ? "上传的文件直接存到云端，同学点开即可预览、下载。也可以直接贴网页链接。"
+        (ONLINE ? "文件可以直接拖到上面那块区域，也可以点「上传文件」。同学点开即可预览、下载。"
                 : "把文件放进站点 files/ 目录后，链接写 files/通知.pdf；网页链接直接贴 https://…") +
       "</div></div>"
     ) : "";
+    var uploadHTML = (kind === "res" && ONLINE) ? (
+      '<div class="dropzone" id="dropZone">把 PDF / 图片拖到这里，或点一下选择文件' +
+      '<span>上传后会自动填好上面的地址和类型</span></div>' +
+      '<input type="file" id="resFile" hidden>'
+    ) : "";
     openModal(
       '<header><h2 id="sheetTitle">' + (item ? "编辑" : "新增") + KIND[kind] + '</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>' +
-      '<p class="sub">保存后为<span style="color:#7a6326;font-weight:600">本机草稿</span>，点「导出发布包」发给维护者才会同步给全班。</p>' +
+      '<p class="sub">保存后<span style="color:#2c6b47;font-weight:600">立刻同步到云端</span>，同学刷新就能看到。</p>' +
       '<form id="editForm" novalidate><datalist id="courseOptions">' +
         courseList().map(function(c){ return '<option value="' + esc(c) + '">'; }).join("") + "</datalist>" +
-      body + attachHTML +
+      body + attachHTML + uploadHTML +
       '<div class="foot">' + (item ? '<button type="button" class="btn danger left" data-act="del" data-kind="' + kind + '" data-id="' + item.id + '">删除</button>' : "") +
       '<button type="button" class="btn ghost" data-act="close">取消</button><button type="submit" class="btn primary">保存</button></div></form>'
     );
@@ -1249,6 +1330,51 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
             .catch(function(e){ toast("上传失败：" + (e.message || "未知错误")); });
         })).then(function(){ up.value = ""; });
       });
+      if(rowsEl){
+        rowsEl.addEventListener("dragover", function(e){ e.preventDefault(); rowsEl.classList.add("over"); });
+        rowsEl.addEventListener("dragleave", function(){ rowsEl.classList.remove("over"); });
+        rowsEl.addEventListener("drop", function(e){
+          e.preventDefault(); rowsEl.classList.remove("over");
+          var fs = Array.prototype.slice.call(e.dataTransfer && e.dataTransfer.files || []);
+          if(!fs.length) return;
+          toast("正在上传 " + fs.length + " 个文件…");
+          fs.forEach(function(f){
+            uploadFile(f).then(function(u){ addFileRow(rowsEl, f.name, u); })
+              .catch(function(err){ toast("上传失败：" + (err.message || "未知错误")); });
+          });
+        });
+      }
+    }
+    if(kind === "res"){
+      var dz = $("#dropZone"), rf = $("#resFile");
+      var urlInput = $('#editForm input[name="url"]');
+      var typeSel = $('#editForm select[name="type"]');
+      function setFile(f){
+        if(!f) return;
+        dz.className = "dropzone"; dz.textContent = "上传中：" + f.name;
+        uploadFile(f).then(function(u){
+          if(urlInput) urlInput.value = u;
+          if(typeSel){
+            if(/\.pdf$/i.test(f.name)) typeSel.value = "PDF";
+            else if(/\.(png|jpe?g|gif|webp)$/i.test(f.name)) typeSel.value = "图片";
+          }
+          dz.className = "dropzone done";
+          dz.textContent = "已上传：" + f.name;
+        }).catch(function(err){
+          dz.className = "dropzone";
+          dz.textContent = "上传失败：" + (err.message || "未知错误");
+        });
+      }
+      if(dz && rf){
+        dz.addEventListener("click", function(){ rf.click(); });
+        rf.addEventListener("change", function(){ setFile(rf.files && rf.files[0]); });
+        dz.addEventListener("dragover", function(e){ e.preventDefault(); dz.classList.add("over"); });
+        dz.addEventListener("dragleave", function(){ dz.classList.remove("over"); });
+        dz.addEventListener("drop", function(e){
+          e.preventDefault(); dz.classList.remove("over");
+          setFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
+        });
+      }
     }
     $("#editForm").addEventListener("submit", function(e){
       e.preventDefault();
@@ -1405,6 +1531,23 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       ui.qRes = ""; $("#qRes").value = ""; renderRes(); return;
     }
     if(a === "preview"){ previewRes(id); return; }
+    if(a === "slot"){
+      slotEditor(parseInt(act.getAttribute("data-idx"), 10));
+      return;
+    }
+    if(a === "newslot"){
+      slotEditor(-1, parseInt(act.getAttribute("data-d"), 10), parseInt(act.getAttribute("data-p"), 10));
+      return;
+    }
+    if(a === "delslot"){
+      var si = parseInt(act.getAttribute("data-idx"), 10);
+      if(!confirm("删除这门课？删除后立刻同步给全班。")) return;
+      var tb = ensureEditable();
+      tb.timetable.splice(si, 1);
+      closeModal(); renderAll(); toast("已删除，正在保存…");
+      cloudSave();
+      return;
+    }
     if(a === "file"){
       var fid = act.getAttribute("data-task"), fi = parseInt(act.getAttribute("data-i"), 10);
       var tk = (data().tasks || []).filter(function(x){ return x.id === fid; })[0];
@@ -1427,6 +1570,13 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     if(a === "seed"){
       CLOUD.data = clone(CLASS);
       renderAll(); toast("正在把当前内容上传到云端…");
+      cloudSave();
+      return;
+    }
+    if(a === "resetfile"){
+      if(!confirm("用页面文件里自带的内容覆盖云端？\n\n这会丢弃你之后在管理端做过的所有修改，请确认已经把重要内容记下来。")) return;
+      CLOUD.data = clone(CLASS);
+      renderAll(); toast("正在用文件内容覆盖云端…");
       cloudSave();
       return;
     }
