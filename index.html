@@ -57,6 +57,13 @@ nav.tabs::-webkit-scrollbar{display:none}
 .hero h1 em{font-style:normal;color:var(--green)}
 .hero .lede{color:var(--muted);font-size:13.5px;margin-top:4px}
 
+.cloud-notice{display:flex;align-items:center;justify-content:space-between;gap:8px 14px;
+  flex-wrap:wrap;margin:2px 0 12px;padding:10px 12px;border:1px solid var(--line);
+  border-radius:10px;background:var(--paper);color:var(--ink-2);font-size:13px}
+.cloud-notice .btn{flex-shrink:0;min-height:34px}
+.class-unavailable :is(#summary,#todayBox,#examStrip,#view-exam,#view-res,#view-table),
+.class-unavailable #view-task > :not(.task-reminder){display:none!important}
+
 /* ---------- summary ---------- */
 .summary{display:flex;align-items:center;gap:0;flex-wrap:wrap;border-top:0;padding:9px 0 10px;font-size:12.5px;color:var(--muted)}
 .summary .s{display:inline-flex;align-items:baseline;gap:4px;padding-right:12px;margin-right:12px;border-right:1px solid var(--line)}
@@ -103,6 +110,7 @@ nav.tabs::-webkit-scrollbar{display:none}
 .toolbar{display:flex;align-items:center;gap:6px;margin-bottom:9px}
 .chips{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex:1;padding:1px 0}
 .chips::-webkit-scrollbar{display:none}
+.chips.searching{flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:rgba(255,254,251,.85);border-radius:999px;padding:4px 11px;font-size:12.5px;
   cursor:pointer;color:var(--ink-2);transition:.16s;white-space:nowrap;display:inline-flex;gap:5px;align-items:center;flex:0 0 auto}
 .chip:hover{border-color:#d3ccbb}
@@ -118,6 +126,7 @@ nav.tabs::-webkit-scrollbar{display:none}
   font-size:13px;outline:none;flex:1;min-width:130px}
 .filterpanel select:focus,.filterpanel input:focus{border-color:#9dc4b0;box-shadow:0 0 0 3px rgba(47,125,97,.1)}
 .clearf{border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:6px 11px;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.searchstatus:not(:empty){margin-bottom:8px;font-size:13px;color:var(--ink-2)}
 
 /* ---------- cards ---------- */
 .list{display:flex;flex-direction:column;gap:8px;margin-bottom:54px}
@@ -228,19 +237,23 @@ nav.tabs::-webkit-scrollbar{display:none}
 .weekbar .sub{font-size:11.5px;color:var(--muted);margin-left:2px}
 .weekbar .now{margin-left:auto;font-size:11.5px;color:var(--green);border:1px solid #bcd8c9;background:var(--soft);
   border-radius:999px;padding:3px 9px;cursor:pointer}
+.task-reminder{margin:0 0 10px;padding:9px 12px;border:1px solid #e5cca0;border-radius:10px;
+  background:#fff8e9;color:#674614;font-size:13px;font-weight:650}
 .ttwrap{overflow-x:auto;border:1px solid var(--line);border-radius:13px;background:var(--paper);margin-bottom:54px}
-table.tt{width:100%;border-collapse:separate;border-spacing:0;min-width:600px;font-size:12px}
+table.tt{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;min-width:var(--tt-min-width,600px);font-size:12px}
+.tt .tt-period-col{width:50px}
 .tt th,.tt td{border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);padding:3px}
 .tt thead th{font-weight:600;font-size:11.5px;color:var(--muted);padding:8px 2px;text-align:center;background:#fbfaf6}
 .tt thead th.today{background:var(--soft);color:var(--green)}
+.tt tbody tr{height:60px}
 .tt tbody tr:last-child th,.tt tbody tr:last-child td{border-bottom:0}
-.tt th.p{width:50px;font-weight:600;font-size:11px;color:var(--ink-2);text-align:center;background:#fbfaf6;line-height:1.25;padding:3px 1px}
+.tt th.p{font-weight:600;font-size:11px;color:var(--ink-2);text-align:center;background:#fbfaf6;line-height:1.25;padding:3px 1px}
 .tt th.p small{display:block;font-size:8.5px;color:var(--muted-2);font-weight:400;letter-spacing:0}
-.tt td{height:40px;vertical-align:top;background:#fff;padding:2px}
+.tt td{position:relative;vertical-align:top;background:#fff;padding:2px}
 .tt td.today{background:#fdfcf6}
-.slot{height:100%;min-height:36px;border-radius:6px;padding:4px 5px;font-size:10.5px;line-height:1.3;background:var(--soft);
-  color:#1d5c46;display:flex;flex-direction:column;justify-content:center;gap:2px;overflow:hidden}
-.slot b{font-weight:650;font-size:10.5px;word-break:break-word}
+.slot{position:absolute;inset:2px;border-radius:6px;padding:4px 5px;font-size:10.5px;line-height:1.3;background:var(--soft);
+  color:#1d5c46;display:flex;flex-direction:column;justify-content:center;justify-content:safe center;gap:2px;overflow:auto;overflow-wrap:anywhere}
+.slot b{font-weight:650;font-size:10.5px}
 .slot span{font-size:9px;opacity:.75}
 .slot.blue{background:#e8f0fb;color:#2b5b96}
 .slot.green{background:#e9f3ec;color:#2c6b47}
@@ -304,6 +317,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   .summary{gap:4px;font-size:12px;padding:7px 0 8px}
   .summary .s{padding-right:9px;margin-right:9px}
   .summary b{font-size:13px}
+  #q{flex-basis:100%}
   .card{padding:10px 10px 10px 13px}
   .exdate{width:44px;padding-right:9px}
   .exdate b{font-size:19px}
@@ -332,13 +346,17 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap class-unavailable" id="classMain">
   <section class="hero">
     <div class="kicker">Study Desk</div>
     <h1>每一份作业，<em>都有着落</em>。</h1>
     <p class="lede">作业、考试、资料和课表，一页看完。</p>
   </section>
 
+  <div class="cloud-notice" id="cloudNotice">
+    <p id="cloudMessage" role="status">正在同步班级内容…</p>
+    <button class="btn ghost hidden" id="cloudRetry" type="button">重试</button>
+  </div>
   <div class="summary" id="summary" aria-label="概览"></div>
   <div class="todaybox" id="todayBox"></div>
   <div class="examstrip hidden" id="examStrip"></div>
@@ -364,15 +382,17 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
 
   <!-- 作业 -->
   <section id="view-task">
+    <p class="task-reminder">英方代办记得按时完成</p>
     <div class="toolbar">
       <div class="chips" id="chips"></div>
-      <button class="fbtn" id="filterBtn" aria-expanded="false">筛选</button>
+      <button class="fbtn" id="filterBtn" aria-expanded="false" aria-controls="filterPanel">搜索</button>
     </div>
     <div class="filterpanel hidden" id="filterPanel">
-      <select id="courseFilter" aria-label="按课程筛选"><option value="">全部课程</option></select>
       <input type="search" id="q" placeholder="搜索作业…" aria-label="搜索作业">
+      <select id="courseFilter" aria-label="按课程筛选"><option value="">全部课程</option></select>
       <button class="clearf hidden" id="clearFilter">清除筛选</button>
     </div>
+    <p class="searchstatus" id="taskSearchStatus" role="status"></p>
     <div class="list" id="taskList"></div>
   </section>
 
@@ -411,7 +431,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
 
 <footer>
   <div class="wrap f">
-    <span><span class="dot"></span>树莓·4班学习站 · 内容更新于 <b id="ver"></b></span>
+    <span><span class="dot"></span>树莓·4班学习站<span class="hidden" id="versionLabel"> · 内容更新于 <b id="ver"></b></span></span>
     <span>你的“已完成”只保存在自己手机上 · <button class="linkbtn" id="adminEntry">管理入口</button></span>
   </div>
 </footer>
@@ -530,17 +550,29 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
 
   /* 云端：内容 + 登录态 + 本地缓存 */
   var CLOUD = { data: null, updatedAt: "", status: "idle", error: "", token: "", refresh: "", exp: 0, email: "" };
+  var cloudRead = { status: "idle", error: "", request: null, lastSyncedAt: 0, hasSnapshot: false, revision: 0 };
+  var localPreview = window.location.protocol === "file:";
+
+  function containsClassContent(value){
+    return !!value && Array.isArray(value.tasks) && Array.isArray(value.exams) && Array.isArray(value.resources);
+  }
 
   function cacheRead(){
     try{
       var raw = localStorage.getItem(LS_CACHE);
       if(!raw) return null;
       var o = JSON.parse(raw);
-      return (o && o.data && o.data.tasks) ? o : null;
+      return o && containsClassContent(o.data) ? o : null;
     }catch(e){ return null; }
   }
   function cacheWrite(){
-    try{ localStorage.setItem(LS_CACHE, JSON.stringify({ data: CLOUD.data, t: Date.now() })); }catch(e){}
+    cloudRead.lastSyncedAt = Date.now();
+    cloudRead.hasSnapshot = true;
+    cloudRead.status = "ok";
+    cloudRead.error = "";
+    try{
+      localStorage.setItem(LS_CACHE, JSON.stringify({ data: CLOUD.data, updatedAt: CLOUD.updatedAt, t: cloudRead.lastSyncedAt }));
+    }catch(e){}
   }
   function sessionSave(){
     try{
@@ -583,37 +615,57 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
 
   function cloudLoad(){
     if(!ONLINE) return Promise.resolve();
-    CLOUD.status = "loading";
-    renderAdminBar();
+    if(cloudRead.request) return cloudRead.request;
+    if(CLOUD.status === "saving") return Promise.resolve();
+
+    var revision = cloudRead.revision;
+    var controller = new AbortController();
+    var timeout = setTimeout(function(){ controller.abort(); }, 10000);
+    var options = { signal: controller.signal, cache: "no-store" };
     var path = "/rest/v1/" + SUPA.table + "?id=eq.main&select=data,updated_at";
     var useAuth = loggedIn();
-    return sbFetch(path, {}, useAuth)
+    cloudRead.request = sbFetch(path, options, useAuth)
       .catch(function(e){
-        if(useAuth && (e.status === 401 || e.status === 403)) return sbFetch(path, {}, false);
+        if(useAuth && (e.status === 401 || e.status === 403)){
+          return sbFetch(path, { signal: controller.signal, cache: "no-store" }, false);
+        }
         throw e;
       })
       .then(function(rows){
-        if(rows && rows.length && rows[0].data){
-          CLOUD.data = rows[0].data;
-          CLOUD.updatedAt = rows[0].updated_at || "";
-          cacheWrite();
+        if(revision !== cloudRead.revision) return;
+        if(!Array.isArray(rows)) throw new Error("云端返回的内容格式有误");
+        if(!rows.length){
+          cloudRead.status = "empty";
+          cloudRead.error = "";
+          return;
         }
-        CLOUD.status = "ok"; CLOUD.error = "";
+        var result = rows[0];
+        if(!result || !containsClassContent(result.data)) throw new Error("云端返回的内容格式有误");
+        CLOUD.data = result.data;
+        CLOUD.updatedAt = result.updated_at || "";
+        cacheWrite();
         renderAll();
       })
       .catch(function(e){
-        CLOUD.status = "error"; CLOUD.error = e.message || "网络错误";
+        if(revision !== cloudRead.revision) return;
+        cloudRead.status = "error";
+        cloudRead.error = e.name === "AbortError" ? "读取超时" : (e.message || "网络错误");
+      })
+      .finally(function(){
+        clearTimeout(timeout);
+        cloudRead.request = null;
+        renderSyncStatus();
         renderAdminBar();
-        if(!CLOUD.data){
-          var c = cacheRead();
-          if(c){ CLOUD.data = c.data; renderAll(); }
-        }
       });
+    renderSyncStatus();
+    renderAdminBar();
+    return cloudRead.request;
   }
 
   function cloudSave(){
     if(!ONLINE) return;
     if(!loggedIn() && !CLOUD.refresh){ toast("登录已过期，请重新登录"); return Promise.resolve(); }
+    cloudRead.revision++;
     CLOUD.status = "saving"; renderAdminBar();
     var payload = { data: data(), updated_at: new Date().toISOString() };
     function push(){
@@ -791,19 +843,23 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   }
 
   /* ============================ 状态 ============================ */
-  var ui = { view: "task", status: "active", course: "", q: "", qRes: "", week: 0, filter: false, resFilter: false,
+  var ui = { view: "task", status: "active", course: "", taskSearch: null, qRes: "", week: 0, filter: false, resFilter: false,
              showArchived: false, showArchExam: false };
 
-  function taskStatus(t){
+  function taskDeadline(t){
+    if((t.dueText || "").trim() || !t.due) return null;
+    var deadline = new Date(t.due);
+    return isNaN(deadline.getTime()) ? null : deadline;
+  }
+  function taskStatus(t, now){
     if(done[t.id]) return "done";
-    if(t.due && new Date(t.due).getTime() < Date.now()) return "expired";
+    var deadline = taskDeadline(t);
+    if(deadline && deadline.getTime() <= (now === undefined ? Date.now() : now)) return "expired";
     return "active";
   }
   function isTaskArchived(t){
-    if(done[t.id] || !t.due) return false;
-    var d = new Date(t.due);
-    if(isNaN(d)) return false;
-    return d.getTime() < Date.now() && dayDiff(new Date(), d) > ARCHIVE_DAYS;
+    var deadline = taskDeadline(t);
+    return !!deadline && !done[t.id] && dayDiff(new Date(), deadline) > ARCHIVE_DAYS;
   }
   function isExamArchived(e){
     if(!e.at) return false;
@@ -818,9 +874,9 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     var now = Date.now(), limit = now + 7 * 86400000;
     data().tasks.forEach(function(t){
       c.all++;
-      var s = taskStatus(t);
+      var s = taskStatus(t, now), deadline = taskDeadline(t);
       c[s]++;
-      if(s === "active" && t.due && new Date(t.due).getTime() <= limit) c.week++;
+      if(s === "active" && deadline && deadline.getTime() <= limit) c.week++;
     });
     c.expired -= data().tasks.filter(isTaskArchived).length;
     return c;
@@ -883,62 +939,105 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   }
 
   /* ============================ 课程 / 筛选 ============================ */
+  var TASK_STATUS_LABELS = { active: "进行中", done: "已完成", expired: "已截止", all: "全部" };
+
+  function taskFilters(){ return ui.taskSearch || ui; }
+
   function courseList(){
     var set = {};
     data().tasks.concat(data().exams, data().resources).forEach(function(o){ if(o.course) set[o.course] = 1; });
     return Object.keys(set).sort(function(a, b){ return a.localeCompare(b, "zh-CN"); });
   }
   function renderChips(){
-    var c = counts();
-    var defs = [["active","进行中"],["done","已完成"],["expired","已截止"],["all","全部"]];
-    $("#chips").innerHTML = defs.map(function(d){
-      return '<button class="chip" data-status="' + d[0] + '" aria-pressed="' + (ui.status === d[0]) + '">' +
-        d[1] + '<span class="n">' + (c[d[0]] || 0) + "</span></button>";
+    var c, selected = taskFilters().status;
+    if(ui.taskSearch){
+      var matches = taskMatches();
+      c = { active: 0, done: 0, expired: 0, all: matches.length };
+      matches.forEach(function(t){ c[taskStatus(t)]++; });
+    }else{
+      c = counts();
+    }
+    var chips = $("#chips");
+    chips.classList.toggle("searching", !!ui.taskSearch);
+    chips.innerHTML = Object.keys(TASK_STATUS_LABELS).map(function(status){
+      return '<button class="chip" data-status="' + status + '" aria-pressed="' + (selected === status) + '">' +
+        TASK_STATUS_LABELS[status] + '<span class="n">' + c[status] + "</span></button>";
     }).join("");
   }
   function renderCourseFilter(){
-    var sel = $("#courseFilter"), cur = ui.course;
+    var sel = $("#courseFilter"), cur = taskFilters().course;
     var html = '<option value="">全部课程</option>';
     courseList().forEach(function(c){
       html += '<option value="' + esc(c) + '"' + (c === cur ? " selected" : "") + ">" + esc(c) + "</option>";
     });
     sel.innerHTML = html;
+    var clear = $("#clearFilter");
+    clear.classList.toggle("hidden", !ui.taskSearch && !cur);
+    clear.textContent = ui.taskSearch ? "清除搜索" : "清除筛选";
+  }
+  function updateTaskSearch(value){
+    var query = value.trim(), search = ui.taskSearch;
+    if(query === (search ? search.query : "")) return;
+    if(search && query){
+      search.query = query;
+    }else{
+      ui.taskSearch = query ? { query: query, status: "all", course: "" } : null;
+      renderCourseFilter();
+    }
+    renderChips();
+    renderTasks();
+  }
+  function clearTaskFilters(){
+    if(ui.taskSearch){
+      $("#q").value = "";
+      updateTaskSearch("");
+      return;
+    }
+    ui.course = "";
+    renderCourseFilter();
+    renderTasks();
   }
 
   /* ============================ 作业卡片 ============================ */
-  function duePill(t){
-    if(done[t.id]) return { c: "past", x: "已完成" };
-    if(t.dueText) return { c: "", x: t.dueText };
-    if(!t.due) return { c: "", x: "不限" };
-    var d = new Date(t.due), days = dayDiff(d, new Date()), t2 = hhmm(d);
-    if(days < 0) return { c: "over", x: "已过期" };
+  function duePill(t, status){
+    if(status === "done") return { c: "past", x: "已完成" };
+    if(status === "expired") return { c: "over", x: "已过期" };
+    var text = (t.dueText || "").trim();
+    if(text) return { c: "", x: text };
+    var d = taskDeadline(t);
+    if(!d) return { c: "", x: "不限" };
+    var days = dayDiff(d, new Date()), t2 = hhmm(d);
     if(days === 0) return { c: "today", x: "今天 " + t2 };
     if(days === 1) return { c: "soon", x: "明天 " + t2 };
     if(days <= 7) return { c: "soon", x: days + " 天后" };
     return { c: "", x: (d.getMonth() + 1) + "/" + d.getDate() };
   }
   function dueLine(t){
-    if(t.dueText) return "截止 " + t.dueText;
-    if(!t.due) return "不限截止";
-    var d = new Date(t.due);
-    return "截止 " + md(d) + " " + hhmm(d);
+    var text = (t.dueText || "").trim(), d = taskDeadline(t);
+    if(text) return "截止 " + text;
+    return d ? "截止 " + md(d) + " " + hhmm(d) : "不限截止";
   }
-  function filteredTasks(){
-    var rows = data().tasks.slice();
-    if(ui.status !== "all") rows = rows.filter(function(t){ return taskStatus(t) === ui.status; });
-    if(ui.course) rows = rows.filter(function(t){ return t.course === ui.course; });
-    if(ui.q){
-      var q = ui.q.toLowerCase();
+  function taskMatches(){
+    var rows = data().tasks.slice(), course = taskFilters().course;
+    if(course) rows = rows.filter(function(t){ return t.course === course; });
+    if(ui.taskSearch){
+      var q = ui.taskSearch.query.toLowerCase();
       rows = rows.filter(function(t){
         return ((t.title||"") + " " + (t.course||"") + " " + (t.note||"") + " " + (t.channel||"")).toLowerCase().indexOf(q) >= 0;
       });
     }
+    return rows;
+  }
+  function filteredTasks(){
+    var rows = taskMatches(), status = taskFilters().status;
+    if(status !== "all") rows = rows.filter(function(t){ return taskStatus(t) === status; });
     var w = { active: 0, expired: 1, done: 2 };
     rows.sort(function(a, b){
       var d = w[taskStatus(a)] - w[taskStatus(b)];
       if(d) return d;
-      var av = a.due ? new Date(a.due).getTime() : Infinity;
-      var bv = b.due ? new Date(b.due).getTime() : Infinity;
+      var aDue = taskDeadline(a), bDue = taskDeadline(b);
+      var av = aDue ? aDue.getTime() : Infinity;
+      var bv = bDue ? bDue.getTime() : Infinity;
       return av - bv;
     });
     return rows;
@@ -959,13 +1058,14 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   }
 
   function renderTasks(){
-    var rows = filteredTasks(), list = $("#taskList");
-    var arch = rows.filter(isTaskArchived);
-    var live = rows.filter(function(t){ return !isTaskArchived(t); });
+    var rows = filteredTasks(), list = $("#taskList"), searching = !!ui.taskSearch;
+    $("#taskSearchStatus").textContent = searching ? "找到 " + rows.length + " 条作业" : "";
+    var arch = searching ? [] : rows.filter(isTaskArchived);
+    var live = searching ? rows : rows.filter(function(t){ return !isTaskArchived(t); });
 
     if(!live.length && !arch.length){
       var msg, btn = "";
-      if(ui.q){ msg = "没有找到相关作业"; btn = "<button class='btn' data-act='clearfilter'>清除筛选</button>"; }
+      if(searching){ msg = "没有找到匹配的作业"; }
       else if(ui.course){ msg = "这门课暂无相关作业"; btn = "<button class='btn' data-act='clearfilter'>清除筛选</button>"; }
       else if(ui.status === "done"){ msg = "还没有标记完成的作业"; }
       else if(ui.status === "expired"){ msg = "近期没有已截止的作业"; }
@@ -987,7 +1087,11 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     list.innerHTML = html;
   }
   function taskCard(t, archived){
-    var st = taskStatus(t), p = duePill(t);
+    var st = taskStatus(t), p = duePill(t, st);
+    if(ui.taskSearch){
+      var resultStatus = isTaskArchived(t) ? "已归档" : TASK_STATUS_LABELS[st];
+      p = { c: st === "expired" ? "over" : st === "done" ? "past" : "", x: resultStatus };
+    }
     var ch = t.url
       ? '<a href="' + esc(t.url) + '" target="_blank" rel="noopener noreferrer">' + esc(t.channel) + " ↗</a>"
       : esc(t.channel);
@@ -1195,7 +1299,10 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       });
       rows.push(row + "</tr>");
     }
-    $("#ttTable").innerHTML = head + "<tbody>" + rows.join("") + "</tbody>";
+    var table = $("#ttTable");
+    var columns = "<colgroup><col class='tt-period-col'><col span='" + days.length + "'></colgroup>";
+    table.style.setProperty("--tt-min-width", Math.max(600, 50 + days.length * 104) + "px");
+    table.innerHTML = columns + head + "<tbody>" + rows.join("") + "</tbody>";
   }
 
   function slotEditor(idx, d0, p0){
@@ -1252,17 +1359,53 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   }
 
   /* ============================ 渲染总控 ============================ */
+  function renderSyncStatus(){
+    var hasSnapshot = cloudRead.hasSnapshot;
+    var showBuiltIn = localPreview || !ONLINE || admin;
+    var unavailable = !hasSnapshot && !showBuiltIn;
+    var failed = cloudRead.status === "error" || cloudRead.status === "empty";
+    var message = "";
+
+    if(!ONLINE){
+      message = "当前未配置云端。";
+    }else if(cloudRead.status !== "ok"){
+      if(cloudRead.request || cloudRead.status === "idle") message = "正在同步班级内容…";
+      else if(cloudRead.status === "empty") message = "暂时没有可读取的班级内容。";
+      else message = "暂时无法获取班级内容，请检查网络后重试。";
+    }
+
+    if(message && hasSnapshot){
+      var time = cloudRead.lastSyncedAt ? new Date(cloudRead.lastSyncedAt).toLocaleString("zh-CN", {
+        year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit"
+      }) : "";
+      message += " 下方显示此设备上次同步的内容" + (time ? "（" + time + "）" : "（同步时间未知）") + "。";
+    }else if(message && showBuiltIn){
+      message += " 下方显示文件内置内容。";
+    }
+
+    $("#classMain").classList.toggle("class-unavailable", unavailable);
+    $("#versionLabel").classList.toggle("hidden", unavailable || !$("#ver").textContent);
+    $("#cloudNotice").classList.toggle("hidden", !message);
+    if($("#cloudMessage").textContent !== message) $("#cloudMessage").textContent = message;
+    var retry = $("#cloudRetry");
+    retry.classList.toggle("hidden", !ONLINE || !failed);
+    retry.disabled = !!cloudRead.request || CLOUD.status === "saving";
+  }
+
   function renderAdminBar(){
     $("#adminbar").classList.toggle("hidden", !admin);
     if(!admin) return;
     var seedBtn = $("#seedBtn");
-    if(seedBtn) seedBtn.classList.toggle("hidden", !!CLOUD.data);
+    if(seedBtn) seedBtn.classList.toggle("hidden", cloudRead.status !== "empty" || !!cloudRead.request || CLOUD.status === "saving");
     var el = $("#pubState"), meta = $("#abMeta"), cls = "", text = "已同步";
     if(!ONLINE){ cls = ""; text = "离线模式"; }
     else if(CLOUD.status === "saving"){ cls = "copied"; text = "保存中…"; }
     else if(CLOUD.status === "error"){ cls = "dirty"; text = "保存失败"; }
-    else if(CLOUD.status === "loading"){ cls = ""; text = "读取中…"; }
-    else { cls = "synced"; text = "已保存到云端"; }
+    else if(cloudRead.request){ cls = ""; text = "读取中…"; }
+    else if(cloudRead.status === "error"){ cls = "dirty"; text = "读取失败"; }
+    else if(cloudRead.status === "empty"){ cls = ""; text = "尚未发布"; }
+    else if(cloudRead.status === "ok"){ cls = "synced"; text = "已同步"; }
+    else { cls = ""; text = "等待同步"; }
     el.className = "pubstate " + cls;
     el.textContent = text;
     var parts = [];
@@ -1272,10 +1415,12 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     }
     if(CLOUD.email) parts.push(CLOUD.email);
     if(CLOUD.status === "error" && CLOUD.error) parts.push("错误：" + CLOUD.error);
+    if(cloudRead.status === "error" && cloudRead.error) parts.push("读取错误：" + cloudRead.error);
     meta.textContent = parts.join(" · ") || "尚未连接云端";
   }
   function renderAll(){
     renderSummary(); renderToday(); renderChips(); renderCourseFilter(); renderTasks(); renderExams(); renderRes(); renderTable();
+    renderSyncStatus();
     renderAdminBar();
   }
   function setView(v){
@@ -1316,8 +1461,9 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     task: [
       { n:"course", l:"课程", t:"text", ph:"例如：高等数学", req:true, list:true },
       { n:"title", l:"作业内容", t:"text", ph:"例如：第十二周作业（第一次）", req:true },
-      { n:"due", l:"截止时间", t:"datetime-local" },
-      { n:"dueText", l:"或文字截止", t:"text", ph:"例如：本学期完成" },
+      { n:"dueMode", l:"截止方式", t:"select", opts:["无截止","具体时间","文字说明"] },
+      { n:"due", l:"截止时间", t:"datetime-local", mode:"具体时间" },
+      { n:"dueText", l:"截止说明", t:"text", ph:"例如：本学期完成", mode:"文字说明" },
       { n:"channel", l:"提交渠道", t:"text", ph:"例如：云邮 / 课堂派 / PTA" },
       { n:"url", l:"提交链接", t:"url", ph:"https://…（可留空）" },
       { n:"note", l:"备注", t:"textarea", ph:"补充说明，可留空" }
@@ -1351,7 +1497,10 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     }
     else if(f.list) inner = '<input name="' + f.n + '" type="text" list="courseOptions" autocomplete="off" value="' + esc(val) + '" placeholder="' + esc(f.ph || "") + '">';
     else inner = '<input name="' + f.n + '" type="' + f.t + '" value="' + esc(val) + '" placeholder="' + esc(f.ph || "") + '">';
-    return '<div class="field"><label>' + f.l + req + "</label>" + inner + "</div>";
+    var mode = f.mode ? ' data-deadline-field="' + f.mode + '"' : "";
+    var fieldId = "edit-" + f.n;
+    inner = inner.replace(/^(<textarea|<select|<input)/, '$1 id="' + fieldId + '"');
+    return '<div class="field"' + mode + '><label for="' + fieldId + '">' + f.l + req + "</label>" + inner + "</div>";
   }
 
   function addFileRow(container, name, url){
@@ -1371,6 +1520,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     var v = item || {};
     var body = FIELDS[kind].map(function(f){
       var val = v[f.n];
+      if(f.n === "dueMode") val = (v.dueText || "").trim() ? "文字说明" : taskDeadline(v) ? "具体时间" : "无截止";
       if(f.t === "datetime-local" && val) val = String(val).slice(0, 16);
       if(f.t === "date" && val) val = String(val).slice(0, 10);
       return fieldHTML(f, val);
@@ -1402,6 +1552,16 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       '<button type="button" class="btn ghost" data-act="close">取消</button><button type="submit" class="btn primary">保存</button></div></form>'
     );
     if(kind === "task"){
+      var deadlineMode = $("#edit-dueMode");
+      function updateDeadlineFields(){
+        $$("[data-deadline-field]", $("#editForm")).forEach(function(field){
+          var visible = deadlineMode.value === field.getAttribute("data-deadline-field");
+          field.classList.toggle("hidden", !visible);
+          field.querySelector("input").disabled = !visible;
+        });
+      }
+      deadlineMode.addEventListener("change", updateDeadlineFields);
+      updateDeadlineFields();
       var rowsEl = $("#fileRows");
       (v.files || []).forEach(function(f){ addFileRow(rowsEl, f.name || "", f.url || ""); });
       $("#addFile").addEventListener("click", function(){ addFileRow(rowsEl, "", ""); });
@@ -1466,17 +1626,24 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     }
     $("#editForm").addEventListener("submit", function(e){
       e.preventDefault();
-      var base = ensureEditable();
-      var fd = new FormData(e.target), obj = item || { id: uid() }, bad = null;
+      var fd = new FormData(e.target), obj = item ? clone(item) : { id: uid() }, bad = null;
+      if(kind === "task"){
+        var mode = fd.get("dueMode");
+        var due = String(fd.get("due") || "").trim(), text = String(fd.get("dueText") || "").trim();
+        if(mode === "具体时间" && (!due || isNaN(new Date(due).getTime()))){ toast("请填写具体截止时间"); return; }
+        if(mode === "文字说明" && !text){ toast("请填写截止说明"); return; }
+        delete obj.due;
+        delete obj.dueText;
+        if(mode === "具体时间") obj.due = due;
+        if(mode === "文字说明") obj.dueText = text;
+      }
       FIELDS[kind].forEach(function(f){
+        if(f.n === "dueMode" || f.mode) return;
         var raw = String(fd.get(f.n) == null ? "" : fd.get(f.n)).trim();
         if(f.req && !raw) bad = f.l;
-        if(f.n === "due" && kind === "task"){
-          if(raw) obj.due = raw.length > 16 ? raw : raw + (raw.length === 16 ? "" : ":00");
-        }
-        else if(f.n === "at") obj.at = raw ? raw + "T00:00" : "";
+        if(f.n === "at") obj.at = raw ? raw + "T00:00" : "";
         else if(f.n === "type"){ if(raw) obj.type = raw; else delete obj.type; }
-        else if(f.n === "dueText" || f.n === "url" || f.n === "time" || f.n === "place" || f.n === "channel" || f.n === "note"){
+        else if(f.n === "url" || f.n === "time" || f.n === "place" || f.n === "channel" || f.n === "note"){
           if(raw) obj[f.n] = raw; else delete obj[f.n];
         }
         else obj[f.n] = raw;
@@ -1494,6 +1661,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
         if(files.length) obj.files = files; else delete obj.files;
       }
       if(obj.url && !/^(https?:\/\/|files\/|\.?\/)/i.test(obj.url)) obj.url = "https://" + obj.url;
+      var base = ensureEditable();
       var arr = base[list];
       if(item){
         var i = arr.map(function(o){ return o.id; }).indexOf(item.id);
@@ -1506,6 +1674,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
   }
 
   /* ============================ 管理 ============================ */
+  /* TODO（见 TODO.md）：备份目前只能导出、不能导入，下次补一个「导入并覆盖云端」 */
   function enterAdmin(){
     if(admin){ renderAll(); return; }
     if(!ONLINE){
@@ -1547,12 +1716,221 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     renderAll(); toast("已退出登录");
   }
   function exportPackage(){
+    if(!admin) return;
     openModal(
       '<header><h2 id="sheetTitle">数据备份</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>' +
-      '<p class="sub">内容已经实时保存在云端，这里只是留一份 JSON 备份，万一要恢复或搬到别处用。</p>' +
-      '<div class="field"><label>当前云端内容</label><textarea class="mono" id="pkgBox" readonly>' + esc(JSON.stringify(data())) + "</textarea></div>" +
-      '<div class="foot"><button class="btn" data-act="copypkg">复制备份</button><button class="btn ghost" data-act="close">关闭</button></div>'
+      '<p class="sub">备份包含当前页面上的作业、考试、资料和课表。附件只保存链接，文件若已删除，需要重新上传。</p>' +
+      '<div class="field"><label for="pkgBox">班级内容 JSON</label><textarea class="mono" id="pkgBox" readonly>' + esc(JSON.stringify(data(), null, 2)) + "</textarea></div>" +
+      '<div class="foot"><button class="btn" data-act="copypkg">复制备份</button>' +
+      '<button class="btn" id="downloadBackup">下载备份</button><button class="btn" id="openRestore">恢复备份</button></div>'
     );
+    $("#downloadBackup").addEventListener("click", function(){ downloadBackup(data(), "班级备份"); });
+    $("#openRestore").addEventListener("click", openBackupRestore);
+  }
+
+  function downloadBackup(content, label){
+    var blob = new Blob([JSON.stringify(content, null, 2) + "\n"], { type: "application/json" });
+    var link = document.createElement("a"), now = new Date();
+    link.href = URL.createObjectURL(blob);
+    link.download = "树莓4班-" + label + "-" + ymd(now) + "-" + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds()) + ".json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function(){ URL.revokeObjectURL(link.href); }, 1000);
+  }
+
+  function validBackupDate(value){
+    var date = /^(\d{4}-\d{2}-\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/.exec(value);
+    if(!date || isNaN(new Date(value).getTime())) return false;
+    return new Date(date[1] + "T00:00:00Z").toISOString().slice(0, 10) === date[1];
+  }
+
+  function validBackupUrl(value){
+    if(typeof value !== "string" || /[\x00-\x1f\x7f\\]/.test(value)) return false;
+    var url = value.trim();
+    if(!/^(?:https?:\/\/|files\/|\.\/|\/(?!\/))/i.test(url)) return false;
+    try{
+      var parsed = new URL(url, "https://class-desk.invalid/");
+      return !parsed.username && !parsed.password && /^(https?:)$/.test(parsed.protocol);
+    }catch(e){ return false; }
+  }
+
+  function parseBackup(raw){
+    var content;
+    try{ content = JSON.parse(raw.replace(/^\uFEFF/, "")); }
+    catch(e){ throw new Error("无法读取 JSON，请选择完整的备份文件或粘贴完整内容。"); }
+
+    function requireValue(ok, message){ if(!ok) throw new Error(message); }
+    function record(value){ return value !== null && typeof value === "object" && !Array.isArray(value); }
+    function optionalText(value){ return value == null || typeof value === "string"; }
+    function textFields(item, fields, label){
+      requireValue(fields.every(function(name){ return optionalText(item[name]); }), label + "的文字字段格式无效。");
+    }
+    requireValue(record(content), "备份必须是一个班级数据对象。");
+    textFields(content, ["version","updated","termStart"], "备份");
+    requireValue(!content.termStart || /^\d{4}-\d{2}-\d{2}$/.test(content.termStart) && validBackupDate(content.termStart), "学期开始日期无效。");
+    requireValue(content.demoTT == null || typeof content.demoTT === "boolean", "示例课表标记无效。");
+    ["tasks","exams","resources","timetable"].forEach(function(name){
+      requireValue(Array.isArray(content[name]), "备份缺少有效的 " + name + " 列表。");
+    });
+
+    [
+      { key: "tasks", label: "作业", text: ["due","dueText","channel","note","url"] },
+      { key: "exams", label: "考试", text: ["at","time","place","note"] },
+      { key: "resources", label: "资料", text: ["url","type","note"] }
+    ].forEach(function(group){
+      var ids = new Set();
+      content[group.key].forEach(function(item, index){
+        var label = "第 " + (index + 1) + " 条" + group.label;
+        requireValue(record(item), label + "格式无效。");
+        requireValue(typeof item.id === "string" && /^[A-Za-z0-9_-]+$/.test(item.id) &&
+          !Object.prototype.hasOwnProperty.call(Object.prototype, item.id) && !ids.has(item.id), label + "的编号无效或重复。");
+        ids.add(item.id);
+        requireValue(typeof item.title === "string" && !!item.title.trim(), label + "缺少名称。");
+        requireValue(optionalText(item.course) && (group.key === "resources" || !!(item.course || "").trim()), label + "的课程字段无效。");
+        textFields(item, group.text, label);
+        requireValue(!item.url || validBackupUrl(item.url), label + "的链接无效。");
+        requireValue(!item.at || validBackupDate(item.at), label + "的考试日期无效。");
+        requireValue(!item.due || validBackupDate(item.due), label + "的截止时间无效。");
+        if(group.key === "tasks" && item.files != null){
+          requireValue(Array.isArray(item.files) && item.files.every(function(file){
+            return record(file) && optionalText(file.name) && validBackupUrl(file.url);
+          }), label + "的附件格式或链接无效。");
+        }
+      });
+    });
+    content.timetable.forEach(function(slot, index){
+      var label = "第 " + (index + 1) + " 条课表";
+      requireValue(record(slot) && typeof slot.c === "string" && !!slot.c.trim() && optionalText(slot.r), label + "的课程或地点无效。");
+      requireValue(Number.isInteger(slot.d) && slot.d >= 1 && slot.d <= 7 &&
+        Number.isInteger(slot.p) && slot.p >= 1 && slot.p <= PERIODS.length &&
+        (slot.len == null || Number.isInteger(slot.len) && slot.len >= 1 && slot.len <= PERIODS.length),
+        label + "的星期或节次无效。");
+    });
+    return content;
+  }
+
+  function openBackupRestore(){
+    if(!admin || !ONLINE) return;
+    openModal(
+      '<header><h2 id="sheetTitle">恢复班级备份</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>' +
+      '<p class="sub">恢复会覆盖全班看到的作业、考试、资料和课表。附件文件若已删除，需要重新上传。</p>' +
+      '<div class="field"><label for="restoreFile">选择 JSON 备份文件</label><input type="file" id="restoreFile" accept=".json,application/json"></div>' +
+      '<div class="field"><label for="restoreText">或粘贴备份 JSON</label><textarea class="mono" id="restoreText"></textarea></div>' +
+      '<p class="sub" id="restorePreview" aria-live="polite"></p><p class="sub" id="restoreStatus" role="status"></p>' +
+      '<div class="foot"><button class="btn" id="previewRestore">检查备份</button>' +
+      '<button class="btn" id="saveBeforeRestore" disabled>下载覆盖前备份</button>' +
+      '<button class="btn danger" id="applyRestore" disabled>覆盖云端</button></div>'
+    );
+    var fileInput = $("#restoreFile"), input = $("#restoreText");
+    var previewText = $("#restorePreview"), status = $("#restoreStatus");
+    var previewButton = $("#previewRestore"), snapshotButton = $("#saveBeforeRestore"), restoreButton = $("#applyRestore");
+    var candidate = null, snapshot = null, revision = 0;
+    var path = "/rest/v1/" + SUPA.table + "?id=eq.main&select=data,updated_at";
+
+    function clearPreview(){
+      revision++;
+      candidate = null;
+      snapshot = null;
+      previewText.textContent = "";
+      status.textContent = "";
+      snapshotButton.disabled = restoreButton.disabled = true;
+    }
+
+    function requireSession(){
+      if(!admin || !ONLINE) return Promise.reject(new Error("请重新登录管理端。"));
+      if(loggedIn()) return Promise.resolve();
+      if(CLOUD.refresh) return cloudRefresh().catch(function(){ throw new Error("登录已过期，请重新登录。"); });
+      return Promise.reject(new Error("登录已过期，请重新登录。"));
+    }
+
+    input.addEventListener("input", clearPreview);
+    fileInput.addEventListener("change", function(){
+      var file = fileInput.files[0];
+      if(!file) return;
+      clearPreview();
+      input.value = "";
+      var currentRevision = revision;
+      status.textContent = "正在读取文件…";
+      file.text().then(function(text){
+        if(revision !== currentRevision) return;
+        input.value = text;
+        status.textContent = "文件已读入，请点击「检查备份」。";
+      }).catch(function(){
+        if(revision === currentRevision) status.textContent = "文件读取失败，可以尝试直接粘贴备份内容。";
+      });
+    });
+
+    previewButton.addEventListener("click", async function(){
+      clearPreview();
+      var currentRevision = revision;
+      try{
+        var parsed = parseBackup(input.value);
+        previewText.textContent = "待恢复：" + parsed.tasks.length + " 条作业、" + parsed.exams.length +
+          " 场考试、" + parsed.resources.length + " 份资料、" + parsed.timetable.length + " 项课表。";
+        status.textContent = "正在读取当前云端版本…";
+        await requireSession();
+        var rows = await sbFetch(path, {}, true);
+        if(revision !== currentRevision || !sheet.contains(input)) return;
+        if(!Array.isArray(rows) || rows.length !== 1 || !rows[0].data || rows[0].updated_at === undefined){
+          throw new Error("无法取得当前云端版本，请稍后重试。");
+        }
+        candidate = parsed;
+        snapshot = rows[0];
+        snapshotButton.disabled = false;
+        status.textContent = "请先下载覆盖前备份，再确认恢复。";
+      }catch(e){
+        if(revision === currentRevision) status.textContent = e.message || "检查失败，请稍后重试。";
+      }
+    });
+
+    snapshotButton.addEventListener("click", function(){
+      downloadBackup(snapshot.data, "恢复前备份");
+      status.textContent = "请确认备份文件已保存，再选择「覆盖云端」。";
+      restoreButton.disabled = false;
+    });
+
+    restoreButton.addEventListener("click", async function(){
+      if(!candidate || !snapshot || CLOUD.status === "saving") return;
+      if(!confirm("确定用这份备份覆盖全班数据？请确认已保存覆盖前的备份文件。")) return;
+      var currentCandidate = candidate, currentSnapshot = snapshot, previousStatus = CLOUD.status;
+      input.disabled = fileInput.disabled = previewButton.disabled = snapshotButton.disabled = restoreButton.disabled = true;
+      status.textContent = "正在恢复到云端…";
+      CLOUD.status = "saving";
+      if(typeof cloudRead !== "undefined") cloudRead.revision++;
+      renderAdminBar();
+      var confirmed = false;
+      try{
+        await requireSession();
+        if(!sheet.contains(input)) return;
+        var expected = currentSnapshot.updated_at === null ? "is.null" : "eq." + encodeURIComponent(currentSnapshot.updated_at);
+        var rows = await sbFetch(path + "&updated_at=" + expected, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "Prefer": "return=representation" },
+          body: JSON.stringify({ data: currentCandidate, updated_at: new Date().toISOString() })
+        }, true);
+        if(Array.isArray(rows) && !rows.length) throw new Error("当前云端内容已变化或没有覆盖权限，请重新检查备份。");
+        if(!Array.isArray(rows) || rows.length !== 1 || !rows[0].data) throw new Error("恢复结果未确认，请刷新云端核对。");
+        CLOUD.data = rows[0].data;
+        CLOUD.updatedAt = rows[0].updated_at || "";
+        CLOUD.status = "ok";
+        CLOUD.error = "";
+        confirmed = true;
+        cacheWrite();
+        if(sheet.contains(input)) closeModal();
+        renderAll();
+        toast("已恢复到云端");
+      }catch(e){
+        candidate = snapshot = null;
+        status.textContent = "恢复失败或结果未确认：" + (e.message || "网络错误") + " 请重新检查当前云端版本后重试。";
+      }finally{
+        if(!confirmed){
+          CLOUD.status = previousStatus === "loading" ? "idle" : previousStatus;
+          renderAdminBar();
+          input.disabled = fileInput.disabled = previewButton.disabled = false;
+        }
+      }
+    });
   }
 
   /* ============================ 文件预览 ============================ */
@@ -1580,7 +1958,14 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     if(tab){ setView(tab.getAttribute("data-view")); return; }
 
     var chip = e.target.closest(".chip[data-status]");
-    if(chip){ ui.status = chip.getAttribute("data-status"); ui.showArchived = false; renderChips(); renderTasks(); return; }
+    if(chip){
+      var status = chip.getAttribute("data-status");
+      taskFilters().status = status;
+      if(!ui.taskSearch) ui.showArchived = false;
+      renderChips(); renderTasks();
+      $("#chips [data-status='" + status + "']").focus({ preventScroll:true });
+      return;
+    }
 
     var goto = e.target.closest("[data-goto]");
     if(goto){ setView(goto.getAttribute("data-goto")); return; }
@@ -1617,8 +2002,7 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
       return;
     }
     if(a === "clearfilter"){
-      ui.q = ""; ui.course = ""; ui.status = "active";
-      $("#q").value = ""; renderCourseFilter(); renderChips(); renderTasks(); return;
+      clearTaskFilters(); return;
     }
     if(a === "clearres"){
       ui.qRes = ""; $("#qRes").value = ""; renderRes(); return;
@@ -1681,6 +2065,8 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     this.setAttribute("aria-expanded", String(ui.filter));
     this.classList.toggle("on", ui.filter);
     $("#filterPanel").classList.toggle("hidden", !ui.filter);
+    if(ui.filter) $("#q").focus();
+    else if(ui.taskSearch) clearTaskFilters();
   });
   $("#resFilterBtn").addEventListener("click", function(){
     ui.resFilter = !ui.resFilter;
@@ -1688,28 +2074,41 @@ footer .dot{width:5px;height:5px;border-radius:50%;background:var(--green-2);dis
     this.classList.toggle("on", ui.resFilter);
     $("#resFilterPanel").classList.toggle("hidden", !ui.resFilter);
   });
-  $("#courseFilter").addEventListener("change", function(e){ ui.course = e.target.value; renderTasks(); });
-  $("#q").addEventListener("input", function(e){
-    ui.q = e.target.value.trim();
-    $("#clearFilter").classList.toggle("hidden", !(ui.q || ui.course));
-    renderTasks();
+  $("#courseFilter").addEventListener("change", function(e){
+    taskFilters().course = e.target.value;
+    renderCourseFilter(); renderChips(); renderTasks();
+  });
+  var taskSearchInput = $("#q"), composingTaskSearch = false;
+  taskSearchInput.addEventListener("compositionstart", function(){ composingTaskSearch = true; });
+  taskSearchInput.addEventListener("compositionend", function(){
+    composingTaskSearch = false;
+    updateTaskSearch(this.value);
+  });
+  taskSearchInput.addEventListener("input", function(e){
+    if(!composingTaskSearch && !e.isComposing) updateTaskSearch(this.value);
   });
   $("#qRes").addEventListener("input", function(e){ ui.qRes = e.target.value.trim(); renderRes(); });
   $("#clearFilter").addEventListener("click", function(){
-    ui.q = ""; ui.course = ""; $("#q").value = ""; renderCourseFilter(); renderTasks();
-    $("#clearFilter").classList.add("hidden");
+    clearTaskFilters();
+    taskSearchInput.focus();
   });
   $("#wkPrev").addEventListener("click", function(){ ui.week = Math.max(1, ui.week - 1); renderTable(); });
   $("#wkNext").addEventListener("click", function(){ ui.week = Math.min(20, ui.week + 1); renderTable(); });
   $("#wkNow").addEventListener("click", function(){ ui.week = termWeek(new Date()); renderTable(); });
   $("#adminEntry").addEventListener("click", enterAdmin);
+  $("#cloudRetry").addEventListener("click", cloudLoad);
 
   /* ============================ 启动 ============================ */
   loadDone();
 
   /* 1. 先用本地缓存渲染，秒开 */
   var cached = cacheRead();
-  if(cached) CLOUD.data = cached.data;
+  if(cached){
+    CLOUD.data = cached.data;
+    CLOUD.updatedAt = cached.updatedAt || "";
+    cloudRead.hasSnapshot = true;
+    cloudRead.lastSyncedAt = typeof cached.t === "number" && Number.isFinite(cached.t) ? cached.t : 0;
+  }
 
   /* 2. 恢复登录态 */
   if(ONLINE && sessionRestore()){
